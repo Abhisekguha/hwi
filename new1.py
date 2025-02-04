@@ -1,3 +1,14 @@
+%%capture
+!pip install unsloth
+# Also get the latest nightly Unsloth!
+!pip uninstall unsloth -y && pip install --upgrade --no-cache-dir --no-deps git+https://github.com/unslothai/unsloth.git
+
+from unsloth import FastVisionModel # FastLanguageModel for LLMs
+import torch
+
+
+
+
 FastVisionModel.for_inference(model) # Enable for inference!
 
 image = dataset[2]["image"]
