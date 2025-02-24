@@ -1,0 +1,21 @@
+image_token_id = processor.tokenizer.additional_special_tokens_ids[
+            processor.tokenizer.additional_special_tokens.index("<image>")]
+
+def collate_fn(examples):
+    texts = [processor.apply_chat_template(example, tokenize=False) for example in examples]
+
+    image_inputs = []
+    for example in examples:
+      image = example[1]['content'][0]['image']
+      if image.mode != 'RGB':
+          image = image.convert('RGB')
+      image_inputs.append([image])
+
+    batch = processor(text=texts, images=image_inputs, return_tensors="pt", padding=True)
+    labels = batch["input_ids"].clone()
+    labels[labels == processor.tokenizer.pad_token_id] = -100  # Mask padding tokens in labels
+    labels[labels == image_token_id] = -100  # Mask image token IDs in labels
+
+    batch["labels"] = labels
+
+    return batch
